@@ -31,4 +31,4 @@ game.scene.add(SceneKeys.GameScene, GameScene);
 game.scene.add(SceneKeys.BackGround, BackGround);
 game.scene.add(SceneKeys.GameOverScene, GameOverScene);
 
-game.scene.start(SceneKeys.GameOverScene);
+game.scene.start(SceneKeys.GameScene);

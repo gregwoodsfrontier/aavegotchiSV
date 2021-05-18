@@ -8,7 +8,7 @@ export class SushiManager {
         [3,3,3,3,3],
         [2,2,2,2,2],
         [2,2,2,2,2],
-        [1,1,1,1,1]
+        [2,2,2,2,2]
     ]
     animate = new AnimationFactory(this._scene)
     sushiarmy: Phaser.Physics.Arcade.Sprite[];
@@ -80,7 +80,7 @@ export class SushiManager {
     }
 
     reset() {
-        this.sortSushiArmy(this.wave1)
+        this.sushiarmy = this.sortSushiArmy(this.wave1)
         this._animate();
     }
 
@@ -125,6 +125,47 @@ export class SushiManager {
         return _sushiarmy
     }
 
+    // calling that infinity spawn of the sushi
+    spawnSushi(_type: number[])
+    {
+        const ORIGIN_X = 100;
+        const ORIGIN_Y = 100;
+        const dx = 100
+        let pushedSushi: Phaser.Physics.Arcade.Sprite;
+        let _sushiarmy = new Array;
+        for (let x = 0; x < _type.length; x++)
+        {
+            let posx = ORIGIN_X + x * dx
+            switch (_type[x])
+            {
+                
+                case 1:                  
+                    pushedSushi = this.lv1sushi.create(posx, ORIGIN_Y, AssetType.SushiLv1)
+                    _sushiarmy.push(pushedSushi)
+                    pushedSushi.play(AnimationType.Sushi1Fly)
+                    break;
+
+                case 2:
+                    pushedSushi = this.lv2sushi.create(ORIGIN_X + x * dx, ORIGIN_Y, AssetType.SushiLv2)
+                    _sushiarmy.push(pushedSushi)
+                    pushedSushi.play(AnimationType.Sushi2Fly)
+                    break;
+
+                case 3:
+                    pushedSushi = this.lv3sushi.create(posx, ORIGIN_Y, AssetType.SushiLv3)
+                    _sushiarmy.push(pushedSushi)
+                    pushedSushi.play(AnimationType.Sushi3Fly)
+                    break;
+                
+                default:
+                    console.error('No such sushi')
+                    break;
+            }
+            
+        }
+        return _sushiarmy
+    }
+
     
 
     private makeTween(child)
@@ -149,7 +190,7 @@ export class SushiManager {
         
     }   
 
-    private _animate() {
+    _animate() {
         this.lv1sushi.getChildren().forEach(element => {
             this.makeTween(element)
         });

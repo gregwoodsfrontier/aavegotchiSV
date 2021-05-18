@@ -23,16 +23,16 @@ export class GameScene extends Phaser.Scene {
     animationFactory!: AnimationFactory
     scoreManager!: ScoreManager
     sushiManager!: SushiManager
-    lv1SushiArmy!: Phaser.Physics.Arcade.Group
+    /* lv1SushiArmy!: Phaser.Physics.Arcade.Group
     lv2SushiArmy!: Phaser.Physics.Arcade.Group
-    lv3SushiArmy!: Phaser.Physics.Arcade.Group
+    lv3SushiArmy!: Phaser.Physics.Arcade.Group */
     bulletTime = 0
     firingTimer = 0
     cursors!: Phaser.Types.Input.Keyboard.CursorKeys
     fireKey!: Phaser.Input.Keyboard.Key
     restartKey!: Phaser.Input.Keyboard.Key
     assetManager!: AssetManager
-    spawnTimer = 0
+    spawnTimer = 7000  // start spawning 4s later
     
     //debug use
     IsShown: boolean = false
@@ -99,6 +99,7 @@ export class GameScene extends Phaser.Scene {
         this.restartKey = this.input.keyboard.addKey(
             Phaser.Input.Keyboard.KeyCodes.D
         )
+        
 
     }
 
@@ -106,7 +107,7 @@ export class GameScene extends Phaser.Scene {
  
         this._shipKeyboardHandler(this.gotchi);
         if (this.time.now > this.firingTimer) {
-            this._enemyFires();
+            //this._enemyFires();
         }
 
         this.setOverlapForAll();
@@ -119,7 +120,14 @@ export class GameScene extends Phaser.Scene {
             this
         );
 
-        if (this.state === GameState.GameOver || this.state === GameState.Win)
+        /* if (this.time.now > this.spawnTimer && this.state === GameState.Playing)
+        {
+            this.spawnSushi();
+        } */
+
+        this.sushiCross();
+
+        if (this.state != GameState.Playing)
         {
             this.physics.pause();
             if (this.restartKey.isDown)
@@ -130,6 +138,34 @@ export class GameScene extends Phaser.Scene {
         }
 
        
+    }
+
+    // When sushi crossed a certain line, insta game over
+    private sushiCross()
+    {
+        //console.log('sushi cross is called')
+        let yline = 450
+        this.sushiManager.lv1sushi.getChildren().forEach(c => {
+            const child = c as Phaser.Physics.Arcade.Sprite
+            if (child.y > yline)
+            {
+                this.callGameOver();
+            }
+        })
+        this.sushiManager.lv2sushi.getChildren().forEach(c => {
+            const child = c as Phaser.Physics.Arcade.Sprite
+            if (child.y > yline)
+            {
+                this.callGameOver();
+            }
+        })
+        this.sushiManager.lv3sushi.getChildren().forEach(c => {
+            const child = c as Phaser.Physics.Arcade.Sprite
+            if (child.y > yline)
+            {
+                this.callGameOver();
+            }
+        })
     }
 
     private setOverlapForAll()
@@ -160,6 +196,14 @@ export class GameScene extends Phaser.Scene {
 
     }
 
+    private spawnSushi(){
+        let spawnDelay = 0
+        console.log('spawnSushi is called')
+        this.sushiManager.spawnSushi([2,2,2,2,2])
+        this.sushiManager._animate()
+        this.spawnTimer = this.time.now + spawnDelay
+    }
+
     private _shipKeyboardHandler(_gotchi: Phaser.Physics.Arcade.Sprite) {
         _gotchi.setVelocity(0, 0)
         if (this.cursors.left.isDown) {
@@ -175,30 +219,23 @@ export class GameScene extends Phaser.Scene {
 
     private callWin()
     {
-        if(!this.sushiManager.noAliveSushis)
-        {
-            this.scoreManager.increaseScore(1000)
-            this.scoreManager.setWinText();
-            this.tweens.pauseAll();
-            this.assetManager.enemyBullets.clear(true, true);
-            this.assetManager.bullets.clear(true, true);
-            this.state = GameState.Win;
-
-        }
+        this.state = GameState.Win;
+        this.scoreManager.increaseScore(1000)
+        this.scoreManager.setWinText();
+        this.tweens.pauseAll();
+        this.assetManager.enemyBullets.clear(true, true);
+        this.assetManager.bullets.clear(true, true);
     }
 
     private callGameOver()
     {
-        if (this.scoreManager.noMoreLives) {
-            this.scoreManager.setGameOverText();
-            this.assetManager.gameOver();
-            this.state = GameState.GameOver;
-            console.log(this.state)
-            this.gotchi.disableBody(true, true);
-            this.tweens.pauseAll();
-            this.sushiManager.disableAllSushis();
-            
-        }
+        this.scoreManager.setGameOverText();
+        this.assetManager.gameOver();
+        this.state = GameState.GameOver;
+        console.log(this.state)
+        this.gotchi.disableBody(true, true);
+        this.tweens.pauseAll();
+        this.sushiManager.disableAllSushis(); 
     }
 
     private explosionEffects(_x:number, _y:number)
@@ -221,7 +258,10 @@ export class GameScene extends Phaser.Scene {
             sushi.destroy()
             this.scoreManager.increaseScore()  
         }
-        this.callWin();
+        if(!this.sushiManager.noAliveSushis)
+        {
+            this.callWin();
+        }
     }
 
 
@@ -236,8 +276,9 @@ export class GameScene extends Phaser.Scene {
         explosion.setPosition(this.gotchi.x, this.gotchi.y);
         explosion.play(AnimationType.Kaboom);
         this.sound.play(SoundType.Kaboom)
-
-        this.callGameOver();
+        if (this.scoreManager.noMoreLives) {
+            this.callGameOver();
+        }
         
     }
 
@@ -257,20 +298,17 @@ export class GameScene extends Phaser.Scene {
             enemyBullet.setPosition(livingSushi.x, livingSushi.y)            
             let angle0 = this.physics.moveToObject(enemyBullet, this.gotchi, 200)
             const dangle = 0.35
-
+            //@ts-ignore
             if (livingSushi.sprite === AssetType.SushiLv1)
             {
                 enemyBullet.setScale(2)
-                //enemyBullet.setVelocity(200*Math.cos(angle0), 200*Math.sin(angle0))
                 this.physics.moveToObject(enemyBullet, this.gotchi, 200);
-            }
+            }//@ts-ignore
             else if (livingSushi.sprite === AssetType.SushiLv2)
             {
-                
                 enemyBullet.setScale(3)
-                //enemyBullet.setVelocity(200*Math.cos(angle0), 200*Math.sin(angle0))
-                this.physics.moveToObject(enemyBullet, this.gotchi, 200);
-            }
+                this.physics.moveToObject(enemyBullet, this.gotchi, 250);
+            }//@ts-ignore
             else if (livingSushi.sprite === AssetType.SushiLv3)
             {
                 enemyBulletL.setPosition(livingSushi.x, livingSushi.y)
@@ -278,15 +316,17 @@ export class GameScene extends Phaser.Scene {
                 enemyBullet.setScale(3)
                 enemyBulletL.setScale(3)
                 enemyBulletR.setScale(3)
-                this.physics.moveToObject(enemyBullet, this.gotchi, 200);
-                enemyBulletL.setVelocity(200 * Math.cos(angle0-dangle), 200 * Math.sin(angle0-dangle))
-                enemyBulletR.setVelocity(200 * Math.cos(angle0+dangle), 200 * Math.sin(angle0+dangle))
+                this.physics.moveToObject(enemyBullet, this.gotchi, 250);
+                enemyBulletL.setVelocity(200 * Math.cos(angle0-dangle), 250 * Math.sin(angle0-dangle))
+                enemyBulletR.setVelocity(200 * Math.cos(angle0+dangle), 250 * Math.sin(angle0+dangle))
             }
 
             this.firingTimer = this.time.now + fireDelay;
         }
 
     } 
+
+
 
     private _fireBullet() {
         if (!this.gotchi.active) {

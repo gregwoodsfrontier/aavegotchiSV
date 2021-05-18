@@ -43,15 +43,15 @@ export class ScoreManager {
     this._setLivesText(SIZE_X, SIZE_Y, normalTextConfig);
 
     this.line1Text = this._scene.add
-      .text(SIZE_X / 2, 120, "", bigTextConfig)
+      .text(SIZE_X / 2, 10, "", bigTextConfig)
       .setOrigin(0.5);
 
     this.line2Text = this._scene.add
-      .text(SIZE_X / 2, 240, "", bigTextConfig)
+      .text(SIZE_X / 2, 100, "", bigTextConfig)
       .setOrigin(0.5);
     
     this.line3Text = this._scene.add
-      .text(SIZE_X / 2, 360, "", bigTextConfig)
+      .text(SIZE_X / 2, 190, "", bigTextConfig)
       .setOrigin(0.5);
   
   }
