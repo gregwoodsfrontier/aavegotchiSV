@@ -110,9 +110,20 @@ export class ScoreManager {
     this.print();
   }
 
-  setHighScoreText()
+  setHighScoreTextWin()
   {
+    if (this.score > this.highScore) {
+      this.highScore = this.score;
+    }
     this._setBigText("YOU WON!", `HIGH SCORE: ${this.highScore}`,"HIT D FOR NEW GAME")
+  }
+
+  setHighScoreTextLose()
+  {
+    if (this.score > this.highScore) {
+      this.highScore = this.score;
+    }
+    this._setBigText("GAME OVER", `HIGH SCORE: ${this.highScore}`,"HIT D FOR NEW GAME")
   }
 
   print() {

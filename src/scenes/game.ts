@@ -32,7 +32,9 @@ export class GameScene extends Phaser.Scene {
     fireKey!: Phaser.Input.Keyboard.Key
     restartKey!: Phaser.Input.Keyboard.Key
     assetManager!: AssetManager
-    spawnTimer = 7000  // start spawning 4s later
+    spawnTimer = 7500  // start spawning time later
+    spawnDelay = 5000 // time passed to spawn the next row
+    spawnArmy = [] as Phaser.Physics.Arcade.Sprite[]
     
     //debug use
     IsShown: boolean = false
@@ -120,10 +122,13 @@ export class GameScene extends Phaser.Scene {
             this
         );
 
-        /* if (this.time.now > this.spawnTimer && this.state === GameState.Playing)
+        if (this.time.now > this.spawnTimer && this.state === GameState.Playing)
         {
-            this.spawnSushi();
-        } */
+            this.spawnArmy = this.spawnSushi();
+            this.spawnArmy.forEach(child => {
+                this.sushiManager.makeTween(child)
+            })
+        }
 
         this.sushiCross();
 
@@ -197,11 +202,11 @@ export class GameScene extends Phaser.Scene {
     }
 
     private spawnSushi(){
-        let spawnDelay = 0
         console.log('spawnSushi is called')
-        this.sushiManager.spawnSushi([2,2,2,2,2])
-        this.sushiManager._animate()
-        this.spawnTimer = this.time.now + spawnDelay
+        var _c = this.sushiManager.spawnSushi([3,3,3,3,3])
+        //this.sushiManager._animate()
+        this.spawnTimer = this.time.now + this.spawnDelay
+        return _c
     }
 
     private _shipKeyboardHandler(_gotchi: Phaser.Physics.Arcade.Sprite) {
@@ -221,7 +226,7 @@ export class GameScene extends Phaser.Scene {
     {
         this.state = GameState.Win;
         this.scoreManager.increaseScore(1000)
-        this.scoreManager.setWinText();
+        this.scoreManager.setHighScoreTextWin();
         this.tweens.pauseAll();
         this.assetManager.enemyBullets.clear(true, true);
         this.assetManager.bullets.clear(true, true);
@@ -229,7 +234,7 @@ export class GameScene extends Phaser.Scene {
 
     private callGameOver()
     {
-        this.scoreManager.setGameOverText();
+        this.scoreManager.setHighScoreTextLose();
         this.assetManager.gameOver();
         this.state = GameState.GameOver;
         console.log(this.state)
@@ -350,5 +355,6 @@ export class GameScene extends Phaser.Scene {
         this.scoreManager.hideText();
         this.sushiManager.reset();
         this.assetManager.reset();
+        this.spawnArmy = []
     }
 }

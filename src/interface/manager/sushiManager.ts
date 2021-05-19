@@ -7,8 +7,8 @@ export class SushiManager {
     wave1 = [
         [3,3,3,3,3],
         [2,2,2,2,2],
-        [2,2,2,2,2],
-        [2,2,2,2,2]
+        [1,1,1,1,1],
+        //[1,1,1,1,1]
     ]
     animate = new AnimationFactory(this._scene)
     sushiarmy: Phaser.Physics.Arcade.Sprite[];
@@ -66,8 +66,6 @@ export class SushiManager {
 
         for (let i = 0; i < _su.length; i++)
         {
-            //console.log(`su length ${i} = ${_su[i].length}`)
-            
             for (let j = 0; j < _su[i].length; j++)
             {
                 
@@ -139,19 +137,22 @@ export class SushiManager {
             switch (_type[x])
             {
                 
-                case 1:                  
+                case 1:
+                    //pushedSushi = this._scene.add.sprite(posx, ORIGIN_Y, AssetType.SushiLv1)                  
                     pushedSushi = this.lv1sushi.create(posx, ORIGIN_Y, AssetType.SushiLv1)
                     _sushiarmy.push(pushedSushi)
                     pushedSushi.play(AnimationType.Sushi1Fly)
                     break;
 
                 case 2:
+                    //pushedSushi = this._scene.add.sprite(posx, ORIGIN_Y, AssetType.SushiLv2)
                     pushedSushi = this.lv2sushi.create(ORIGIN_X + x * dx, ORIGIN_Y, AssetType.SushiLv2)
                     _sushiarmy.push(pushedSushi)
                     pushedSushi.play(AnimationType.Sushi2Fly)
                     break;
 
                 case 3:
+                    //pushedSushi = this._scene.add.sprite(posx, ORIGIN_Y, AssetType.SushiLv3)
                     pushedSushi = this.lv3sushi.create(posx, ORIGIN_Y, AssetType.SushiLv3)
                     _sushiarmy.push(pushedSushi)
                     pushedSushi.play(AnimationType.Sushi3Fly)
@@ -168,7 +169,7 @@ export class SushiManager {
 
     
 
-    private makeTween(child)
+    makeTween(child)
     {
         this._scene.tweens.add(
             {
@@ -182,8 +183,7 @@ export class SushiManager {
                 repeat: -1,
                 onYoyo: (tween, targets, undefined) => {
                     
-                    child.y += 20
-
+                    child.y += 55
                 }
             }
         )
