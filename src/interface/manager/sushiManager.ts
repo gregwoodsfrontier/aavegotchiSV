@@ -7,14 +7,18 @@ export class SushiManager {
     wave1 = [
         [3,3,3,3,3],
         [2,2,2,2,2],
-        [1,1,1,1,1],
-        //[1,1,1,1,1]
+        [1,1,1,1,1]
     ]
     animate = new AnimationFactory(this._scene)
     sushiarmy: Phaser.Physics.Arcade.Sprite[];
     lv1sushi: Phaser.Physics.Arcade.Group;
     lv2sushi: Phaser.Physics.Arcade.Group;
     lv3sushi: Phaser.Physics.Arcade.Group;
+
+    private ORIGIN_X: number = 100
+    private ORIGIN_Y: number = 100
+    private dx: number = 100
+    private dy: number = 60
 
     get noAliveSushis(): boolean {
         let noOfSushi = this.lv1sushi.getChildren().length + this.lv2sushi.getChildren().length + this.lv3sushi.getChildren().length
@@ -82,12 +86,21 @@ export class SushiManager {
         this._animate();
     }
 
+    private spawnSushiPosX(_numSushi: number)
+    {
+        let xPos = [] as number[]
+        // _numSushi is number of Sushi going to spawn
+        for (let i = 0; i < _numSushi; i++)
+        {
+            xPos.push(this.ORIGIN_X + i * this.dx)
+            //xPos.push(this.ORIGIN_X + i * this.dx)
+        }
+        return xPos
+    }
+
     // generate that sushi army
     private sortSushiArmy(_type: number[][])
     {
-        const ORIGIN_X = 100;
-        const ORIGIN_Y = 100;
-        const dy = 55
         let pushedSushi: Phaser.Physics.Arcade.Sprite;
         let _sushiarmy = new Array;
         for (let y = 0; y < _type.length; y++)
@@ -97,19 +110,28 @@ export class SushiManager {
                 switch (_type[y][x])
                 {
                     case 1:                  
-                        pushedSushi = this.lv1sushi.create(ORIGIN_X + x * 100, ORIGIN_Y + y * dy, AssetType.SushiLv1)
+                        pushedSushi = this.lv1sushi.create(
+                            this.ORIGIN_X + x * this.dx,
+                            this.ORIGIN_Y + y * this.dy, 
+                            AssetType.SushiLv1)
                         _sushiarmy.push(pushedSushi)
                         pushedSushi.play(AnimationType.Sushi1Fly)
                         break;
 
                     case 2:
-                        pushedSushi = this.lv2sushi.create(ORIGIN_X + x * 100, ORIGIN_Y + y * dy, AssetType.SushiLv2)
+                        pushedSushi = this.lv2sushi.create(
+                            this.ORIGIN_X + x * this.dx,
+                            this.ORIGIN_Y + y * this.dy, 
+                            AssetType.SushiLv2)
                         _sushiarmy.push(pushedSushi)
                         pushedSushi.play(AnimationType.Sushi2Fly)
                         break;
 
                     case 3:
-                        pushedSushi = this.lv3sushi.create(ORIGIN_X + x * 100, ORIGIN_Y + y * dy, AssetType.SushiLv3)
+                        pushedSushi = this.lv3sushi.create(
+                            this.ORIGIN_X + x * this.dx,
+                            this.ORIGIN_Y + y * this.dy, 
+                            AssetType.SushiLv3)
                         _sushiarmy.push(pushedSushi)
                         pushedSushi.play(AnimationType.Sushi3Fly)
                         break;
@@ -126,34 +148,29 @@ export class SushiManager {
     // calling that infinity spawn of the sushi
     spawnSushi(_type: number[])
     {
-        const ORIGIN_X = 100;
-        const ORIGIN_Y = 100;
-        const dx = 100
         let pushedSushi: Phaser.Physics.Arcade.Sprite;
         let _sushiarmy = new Array;
         for (let x = 0; x < _type.length; x++)
         {
-            let posx = ORIGIN_X + x * dx
+            let temp = this.spawnSushiPosX(_type.length)
+            let posx = temp[x]
             switch (_type[x])
             {
                 
-                case 1:
-                    //pushedSushi = this._scene.add.sprite(posx, ORIGIN_Y, AssetType.SushiLv1)                  
-                    pushedSushi = this.lv1sushi.create(posx, ORIGIN_Y, AssetType.SushiLv1)
+                case 1:                 
+                    pushedSushi = this.lv1sushi.create(posx, this.ORIGIN_Y, AssetType.SushiLv1)
                     _sushiarmy.push(pushedSushi)
                     pushedSushi.play(AnimationType.Sushi1Fly)
                     break;
 
                 case 2:
-                    //pushedSushi = this._scene.add.sprite(posx, ORIGIN_Y, AssetType.SushiLv2)
-                    pushedSushi = this.lv2sushi.create(ORIGIN_X + x * dx, ORIGIN_Y, AssetType.SushiLv2)
+                    pushedSushi = this.lv2sushi.create(posx, this.ORIGIN_Y, AssetType.SushiLv2)
                     _sushiarmy.push(pushedSushi)
                     pushedSushi.play(AnimationType.Sushi2Fly)
                     break;
 
                 case 3:
-                    //pushedSushi = this._scene.add.sprite(posx, ORIGIN_Y, AssetType.SushiLv3)
-                    pushedSushi = this.lv3sushi.create(posx, ORIGIN_Y, AssetType.SushiLv3)
+                    pushedSushi = this.lv3sushi.create(posx, this.ORIGIN_Y, AssetType.SushiLv3)
                     _sushiarmy.push(pushedSushi)
                     pushedSushi.play(AnimationType.Sushi3Fly)
                     break;
@@ -162,12 +179,9 @@ export class SushiManager {
                     console.error('No such sushi')
                     break;
             }
-            
         }
         return _sushiarmy
     }
-
-    
 
     makeTween(child)
     {
@@ -183,7 +197,7 @@ export class SushiManager {
                 repeat: -1,
                 onYoyo: (tween, targets, undefined) => {
                     
-                    child.y += 55
+                    child.y += 25
                 }
             }
         )
@@ -208,7 +222,6 @@ export class SushiManager {
         this.lv1sushi.clear(true, true);
         this.lv2sushi.clear(true, true);
         this.lv3sushi.clear(true, true)
-        
     }
 
 }

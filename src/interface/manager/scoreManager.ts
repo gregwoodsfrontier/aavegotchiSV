@@ -102,14 +102,6 @@ export class ScoreManager {
     this._setBigText("", "", "")
   }
 
-  private setHighScore() {
-    if (this.score > this.highScore) {
-      this.highScore = this.score;
-    }
-    this.score = 0;
-    this.print();
-  }
-
   setHighScoreTextWin()
   {
     if (this.score > this.highScore) {
@@ -122,8 +114,9 @@ export class ScoreManager {
   {
     if (this.score > this.highScore) {
       this.highScore = this.score;
+      this._scene.registry.set('highscore', this.highScore)
     }
-    this._setBigText("GAME OVER", `HIGH SCORE: ${this.highScore}`,"HIT D FOR NEW GAME")
+    this._setBigText("GAME OVER", `HIGH SCORE: ${this._scene.registry.get('highscore')}`,"HIT D FOR NEW GAME")
   }
 
   print() {

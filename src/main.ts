@@ -3,7 +3,6 @@ import {SceneKeys} from './consts/SceneKeys'
 import TitleScene  from './scenes/titleScene'
 import { GameScene } from './scenes/game';
 import BackGround from './scenes/background';
-import GameOverScene from './scenes/gameover';
 
 const config: Phaser.Types.Core.GameConfig = {
 	type: Phaser.AUTO,
@@ -29,6 +28,6 @@ const game = new Phaser.Game(config)
 game.scene.add(SceneKeys.TitleScene, TitleScene);
 game.scene.add(SceneKeys.GameScene, GameScene);
 game.scene.add(SceneKeys.BackGround, BackGround);
-game.scene.add(SceneKeys.GameOverScene, GameOverScene);
+//game.scene.add(SceneKeys.GameOverScene, GameOverScene);
 
-game.scene.start(SceneKeys.GameScene);
+game.scene.start(SceneKeys.TitleScene);

@@ -32,9 +32,10 @@ export class GameScene extends Phaser.Scene {
     fireKey!: Phaser.Input.Keyboard.Key
     restartKey!: Phaser.Input.Keyboard.Key
     assetManager!: AssetManager
-    spawnTimer = 7500  // start spawning time later
-    spawnDelay = 5000 // time passed to spawn the next row
+    spawnTimer = 8000  // start spawning time later
+    spawnDelay = 8000 // time passed to spawn the next row
     spawnArmy = [] as Phaser.Physics.Arcade.Sprite[]
+    spawnEvent!: Phaser.Time.TimerEvent
     
     //debug use
     IsShown: boolean = false
@@ -102,14 +103,38 @@ export class GameScene extends Phaser.Scene {
             Phaser.Input.Keyboard.KeyCodes.D
         )
         
+        // create spawnSushi event
+        this.spawnEvent = new Phaser.Time.TimerEvent(
+            {
+                delay: this.spawnDelay,
+                loop: true,
+                callback: () =>
+                {
+                    if (this.state === GameState.Playing)
+                    {
+                        this.spawnArmy = this.spawnSushi();
+                        this.spawnArmy.forEach(child => {
+                            this.sushiManager.makeTween(child)
+                        })
+                    }
+                },
+                callbackScope: this,
+            }
+        )
 
+        this.time.addEvent(this.spawnEvent)
+        if(this.registry.get('highscore') != undefined)
+        {
+            console.log(`scoreManager high score: ${this.registry.get('highscore')}`)
+        }
+        
     }
 
     update() {
- 
+
         this._shipKeyboardHandler(this.gotchi);
         if (this.time.now > this.firingTimer) {
-            //this._enemyFires();
+            this._enemyFires();
         }
 
         this.setOverlapForAll();
@@ -121,14 +146,6 @@ export class GameScene extends Phaser.Scene {
             undefined,
             this
         );
-
-        if (this.time.now > this.spawnTimer && this.state === GameState.Playing)
-        {
-            this.spawnArmy = this.spawnSushi();
-            this.spawnArmy.forEach(child => {
-                this.sushiManager.makeTween(child)
-            })
-        }
 
         this.sushiCross();
 
@@ -202,9 +219,13 @@ export class GameScene extends Phaser.Scene {
     }
 
     private spawnSushi(){
-        console.log('spawnSushi is called')
-        var _c = this.sushiManager.spawnSushi([3,3,3,3,3])
-        //this.sushiManager._animate()
+
+        let x: number[] = []
+        for (let i=0; i<5; i++)
+        {
+            x.push(Phaser.Math.RND.integerInRange(1,3))
+        }
+        var _c = this.sushiManager.spawnSushi(x)
         this.spawnTimer = this.time.now + this.spawnDelay
         return _c
     }
@@ -257,7 +278,6 @@ export class GameScene extends Phaser.Scene {
         bullet.destroy()
         sushi.lives -= 1
         sushi.setTint(0xff33ff, 0xffff00, 0x0000ff, 0xff0000) 
-        //console.log(`Sushi HP is ${sushi.lives}`)
         if(sushi.lives === 0 || sushi.lives < 0)
         {
             sushi.destroy()
@@ -302,7 +322,7 @@ export class GameScene extends Phaser.Scene {
         {
             enemyBullet.setPosition(livingSushi.x, livingSushi.y)            
             let angle0 = this.physics.moveToObject(enemyBullet, this.gotchi, 200)
-            const dangle = 0.35
+            const dangle = 0.375
             //@ts-ignore
             if (livingSushi.sprite === AssetType.SushiLv1)
             {
@@ -322,8 +342,8 @@ export class GameScene extends Phaser.Scene {
                 enemyBulletL.setScale(3)
                 enemyBulletR.setScale(3)
                 this.physics.moveToObject(enemyBullet, this.gotchi, 250);
-                enemyBulletL.setVelocity(200 * Math.cos(angle0-dangle), 250 * Math.sin(angle0-dangle))
-                enemyBulletR.setVelocity(200 * Math.cos(angle0+dangle), 250 * Math.sin(angle0+dangle))
+                enemyBulletL.setVelocity(250 * Math.cos(angle0-dangle), 250 * Math.sin(angle0-dangle))
+                enemyBulletR.setVelocity(250 * Math.cos(angle0+dangle), 250 * Math.sin(angle0+dangle))
             }
 
             this.firingTimer = this.time.now + fireDelay;
@@ -355,6 +375,9 @@ export class GameScene extends Phaser.Scene {
         this.scoreManager.hideText();
         this.sushiManager.reset();
         this.assetManager.reset();
+        this.spawnArmy = []
+        this.time.clearPendingEvents();
+        this.time.removeAllEvents();
         this.spawnArmy = []
     }
 }

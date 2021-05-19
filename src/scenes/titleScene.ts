@@ -22,7 +22,6 @@ export default class TitleScene extends Phaser.Scene
 
     create()
     {
-        console.log('title scene preload')
         this.add.image(400, 300, 'galaxy');
         this.add.image(400, 150, 'logo').setScale(0.4, 0.4);
         this.add.image(400, 300, 'sushiVader');
