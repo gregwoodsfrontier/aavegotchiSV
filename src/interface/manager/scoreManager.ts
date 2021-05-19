@@ -4,12 +4,16 @@ import WebFontFile from '../../scenes/webFontFile'
 export class ScoreManager {
   scoreText!: Phaser.GameObjects.Text;
   highscoreText!: Phaser.GameObjects.Text;
+  restartText!: Phaser.GameObjects.Text;
   line1Text!: Phaser.GameObjects.Text;
   line2Text!: Phaser.GameObjects.Text;
   line3Text!: Phaser.GameObjects.Text;
   glives!: Phaser.Physics.Arcade.Group;
-  highScore = 0;
+  highScore: number = 0;
   score = 0;
+  l1texty = 15;
+  l1textdy = 90;
+  
 
   get noMoreLives() {
     return this.glives.countActive(true) === 0;
@@ -38,21 +42,23 @@ export class ScoreManager {
     };
     
     this._scene.load.addFile(new WebFontFile(this._scene.load, 'Press Start 2P'))
-    this.scoreText = this._scene.add.text(10, -SIZE_Y*0.5, `SCORE: 0`, normalTextConfig);
+    this.scoreText = this._scene.add.text(10, -SIZE_Y*0.52, `SCORE: 0`, normalTextConfig);
+    this.highscoreText = this._scene.add.text(10, -SIZE_Y*0.46, `HIGH:  0`, normalTextConfig);
 
     this._setLivesText(SIZE_X, SIZE_Y, normalTextConfig);
 
     this.line1Text = this._scene.add
-      .text(SIZE_X / 2, 10, "", bigTextConfig)
+      .text(SIZE_X / 2, this.l1texty, "", bigTextConfig)
       .setOrigin(0.5);
 
     this.line2Text = this._scene.add
-      .text(SIZE_X / 2, 100, "", bigTextConfig)
+      .text(SIZE_X / 2, this.l1texty+this.l1textdy, "", bigTextConfig)
       .setOrigin(0.5);
     
     this.line3Text = this._scene.add
-      .text(SIZE_X / 2, 190, "", bigTextConfig)
+      .text(SIZE_X / 2, this.l1texty+this.l1textdy*2, "", bigTextConfig)
       .setOrigin(0.5);
+
   
   }
 
@@ -61,27 +67,29 @@ export class ScoreManager {
     SIZE_Y: number,
     textConfig: { fontSize: string; fontFamily: string; color: string }
   ) {
-    this._scene.add.text(SIZE_X - 120, -SIZE_Y*0.5, `LIVES: `, textConfig).setOrigin(1,0);
+    this._scene.add.text(SIZE_X - 120, -SIZE_Y*0.52, `LIVES: `, textConfig).setOrigin(1,0);
     this.glives = this._scene.physics.add.group({
       maxSize: 3,
       runChildUpdate: true,
     });
-    this.resetLives();
+    this.resetData();
   }
 
-  resetLives() {
+  resetData() {
     let SIZE_X = this._scene.game.canvas.width;
     this.glives.clear(true, true)
     for (let i = 0; i < 3; i++) {
       let _gem: Phaser.GameObjects.Sprite = this.glives.create(
         SIZE_X - 190*0.6 + 70 * i * 0.6,
-        35,
+        30,
         AssetType.Gem
       );
       _gem.setOrigin(0.5, 0.5);
       _gem.setAlpha(0.8);
       _gem.setScale(0.6)
     }
+    this.score = 0;
+    this.scoreText.setText(`SCORE: 0`)
   }
 
   private _setBigText(line1: string, line2: string, line3: string) {
@@ -90,33 +98,91 @@ export class ScoreManager {
     this.line3Text.setText(line3);
   }
 
-  setWinText() {
-    this._setBigText("YOU WON!", "PRESS D","FOR NEW GAME");
-  }
-
-  setGameOverText() {
-    this._setBigText("GAME OVER", "PRESS D", "FOR NEW GAME");
-  }
-
   hideText() {
     this._setBigText("", "", "")
+  }
+
+  private setRestartText()
+  {
+    this.restartText = this.line3Text.setText('Hit D to restart')
+    // blinking text
+    this._scene.time.addEvent(
+      {
+        delay: 1000,
+        loop: true,
+        callbackScope:this,
+        callback: () => 
+        {
+            if (this.restartText.alpha === 1)
+            {
+                this._scene.time.delayedCall(500, () =>
+                {
+                    this.restartText.setAlpha(0);
+                }) 
+            }
+            else
+            {
+                this._scene.time.delayedCall(500, () =>
+                {
+                    this.restartText.setAlpha(1);
+                })
+            }
+        }
+      }
+  )
   }
 
   setHighScoreTextWin()
   {
     if (this.score > this.highScore) {
       this.highScore = this.score;
+      this._scene.registry.set('highscore', this.highScore)
     }
-    this._setBigText("YOU WON!", `HIGH SCORE: ${this.highScore}`,"HIT D FOR NEW GAME")
+
+    if (this._scene.registry.get('highscore') != undefined)
+    {
+      this.highscoreText.setText(`HIGH:  ${this._scene.registry.get('highscore')}`)
+      this._setBigText("GAME OVER", 
+      `HIGH SCORE: ${this._scene.registry.get('highscore')}`,
+      "")
+      this.setRestartText();
+      
+    }
+    else
+    {
+      this.highscoreText.setText(`HIGH:  0`)
+      this._setBigText("GAME OVER", 
+      `HIGH SCORE: 0`,
+      "")
+      this.setRestartText();
+    }
   }
 
   setHighScoreTextLose()
   {
     if (this.score > this.highScore) {
       this.highScore = this.score;
+      console.log(this.highScore)
       this._scene.registry.set('highscore', this.highScore)
     }
-    this._setBigText("GAME OVER", `HIGH SCORE: ${this._scene.registry.get('highscore')}`,"HIT D FOR NEW GAME")
+
+    if (this._scene.registry.get('highscore') != undefined)
+    {
+      this.highscoreText.setText(`HIGH:  ${this._scene.registry.get('highscore')}`)
+      this._setBigText("GAME OVER", 
+      `HIGH SCORE: ${this._scene.registry.get('highscore')}`,
+      "")
+      this.setRestartText();
+    }
+    else
+    {
+      this.highscoreText.setText(`HIGH:  0`)
+      this._setBigText("GAME OVER", 
+      `HIGH SCORE: 0`,
+      "")
+      this.setRestartText();
+    }
+    
   }
 
   print() {

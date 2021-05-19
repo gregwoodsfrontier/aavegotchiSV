@@ -18,6 +18,8 @@ export default class BackGround extends Phaser.Scene
     create()
     {
         this.add.image(400, 300, AssetType.Galaxy);
+        // auto-game-over line
+        this.add.rectangle(400, 480, 800, 5, 0xff33ff, 0.25)
         
     }
 

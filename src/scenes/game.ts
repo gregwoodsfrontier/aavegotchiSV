@@ -23,9 +23,6 @@ export class GameScene extends Phaser.Scene {
     animationFactory!: AnimationFactory
     scoreManager!: ScoreManager
     sushiManager!: SushiManager
-    /* lv1SushiArmy!: Phaser.Physics.Arcade.Group
-    lv2SushiArmy!: Phaser.Physics.Arcade.Group
-    lv3SushiArmy!: Phaser.Physics.Arcade.Group */
     bulletTime = 0
     firingTimer = 0
     cursors!: Phaser.Types.Input.Keyboard.CursorKeys
@@ -155,7 +152,8 @@ export class GameScene extends Phaser.Scene {
             if (this.restartKey.isDown)
             {
                 console.log("D is pressed")
-                this.scene.restart()
+                //this.scene.restart()
+                this.restart()
             }
         }
 
@@ -249,8 +247,10 @@ export class GameScene extends Phaser.Scene {
         this.scoreManager.increaseScore(1000)
         this.scoreManager.setHighScoreTextWin();
         this.tweens.pauseAll();
+        this.physics.pause();
         this.assetManager.enemyBullets.clear(true, true);
         this.assetManager.bullets.clear(true, true);
+        this.time.clearPendingEvents();
     }
 
     private callGameOver()
@@ -261,7 +261,9 @@ export class GameScene extends Phaser.Scene {
         console.log(this.state)
         this.gotchi.disableBody(true, true);
         this.tweens.pauseAll();
-        this.sushiManager.disableAllSushis(); 
+        this.physics.pause();
+        this.sushiManager.disableAllSushis();
+        this.time.clearPendingEvents();
     }
 
     private explosionEffects(_x:number, _y:number)
@@ -371,13 +373,14 @@ export class GameScene extends Phaser.Scene {
     restart() {
         this.state = GameState.Playing;
         this.gotchi.enableBody(true, this.gotchi.x, this.gotchi.y, true, true);
-        this.scoreManager.resetLives();
+        this.scoreManager.resetData();
         this.scoreManager.hideText();
         this.sushiManager.reset();
         this.assetManager.reset();
         this.spawnArmy = []
+        this.tweens.resumeAll();
+        this.physics.resume();
         this.time.clearPendingEvents();
-        this.time.removeAllEvents();
-        this.spawnArmy = []
+        this.time.addEvent(this.spawnEvent);
     }
 }
