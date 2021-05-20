@@ -11,7 +11,7 @@ import { ScoreManager } from "../interface/manager/scoreManager";
 import { GameState } from "../interface/gameState";
 import { SceneKeys } from "~/consts/SceneKeys";
 import WebFontFile from '../scenes/webFontFile'
-import {AttackFunc} from '../interface/attack'
+//import {AttackFunc} from '../interface/attack'
 
 
 export class GameScene extends Phaser.Scene {
@@ -39,7 +39,7 @@ export class GameScene extends Phaser.Scene {
     IsStarTime: number = 1100
 
     // make anoththe class for attack function
-    attackFunc!: AttackFunc
+    //attackFunc!: AttackFunc
 
     //debug use
     IsShown: boolean = false
@@ -92,7 +92,7 @@ export class GameScene extends Phaser.Scene {
         this.scoreManager = new ScoreManager(this)
         this.sushiManager = new SushiManager(this)
         this.assetManager = new AssetManager(this)
-        this.attackFunc = new AttackFunc(this)
+        //this.attackFunc = new AttackFunc(this)
 
         this.gotchi = this.physics.add.sprite(400, 525, AssetType.Gotchi)
         this.gotchi.setCollideWorldBounds(true);
@@ -334,6 +334,7 @@ export class GameScene extends Phaser.Scene {
         let enemyBullet = this.assetManager.enemyBullets.get();
         let eB = [
             this.assetManager.enemyBullets.get(),
+            this.assetManager.enemyBullets.get(),
             this.assetManager.enemyBullets.get()
         ]
         let enemyBulletL = this.assetManager.enemyBullets.get();
@@ -341,38 +342,64 @@ export class GameScene extends Phaser.Scene {
         let livingSushi = this.sushiManager.getRandomAliveEnemy()
         
         
-        if (enemyBullet && livingSushi)
-        {
-            enemyBullet.setPosition(livingSushi.x, livingSushi.y)            
-            let angle0 = this.physics.moveToObject(enemyBullet, this.gotchi, 200)
+        if (eB[0] && livingSushi)
+        {           
+            //let angle0 = this.physics.moveToObject(eB[0], this.gotchi, 200)
             const dangle = 0.375
             //@ts-ignore
             if (livingSushi.sprite === AssetType.SushiLv1)
             {
-                this.attackFunc.singleShot(enemyBullet, this.gotchi)
+                this.singleShot(eB[0], livingSushi.x, livingSushi.y)
                 
             }//@ts-ignore
             else if (livingSushi.sprite === AssetType.SushiLv2)
             {
-                enemyBullet.setScale(3)
-                this.physics.moveToObject(enemyBullet, this.gotchi, 250);
+                eB[0].setPosition(livingSushi.x, livingSushi.y)
+                eB[0].setScale(3)
+                this.physics.moveToObject(eB[0], this.gotchi, 250);
             }//@ts-ignore
             else if (livingSushi.sprite === AssetType.SushiLv3)
             {
+                /* this.radiantShot(eB, livingSushi.x, livingSushi.y) */
                 eB[0].setPosition(livingSushi.x, livingSushi.y)
                 eB[1].setPosition(livingSushi.x, livingSushi.y)
-                enemyBullet.setScale(3)
+                eB[2].setPosition(livingSushi.x, livingSushi.y)
                 eB[0].setScale(3)
                 eB[1].setScale(3)
-                this.physics.moveToObject(enemyBullet, this.gotchi, 250);
-                eB[0].setVelocity(250 * Math.cos(angle0-dangle), 250 * Math.sin(angle0-dangle))
-                eB[1].setVelocity(250 * Math.cos(angle0+dangle), 250 * Math.sin(angle0+dangle))
+                eB[2].setScale(3)
+                //eB[0].setVelocity(250 * Math.cos(angle0), 250 * Math.sin(angle0))
+                let angle0 = this.physics.moveToObject(eB[0], this.gotchi, 250);
+                eB[1].setVelocity(250 * Math.cos(angle0-dangle), 250 * Math.sin(angle0-dangle))
+                eB[2].setVelocity(250 * Math.cos(angle0+dangle), 250 * Math.sin(angle0+dangle))
             }
 
             this.firingTimer = this.time.now + this.fireDelay;
         }
 
-    } 
+    }
+    
+    private singleShot(bullet: Phaser.Physics.Arcade.Sprite, _x:number, _y:number)
+    {
+        bullet.setPosition(_x, _y)
+        bullet.setScale(2)
+        this.physics.moveToObject(bullet, this.gotchi, 200);
+    }
+
+    private radiantShot(_eb: Phaser.Physics.Arcade.Sprite[],  _x:number, _y:number)
+    {
+        for (let i=0; i<3; i++)
+        {
+            let angle0 = this.physics.moveToObject(_eb[i], this.gotchi, 250)
+            const dangle = 0.375
+            _eb[i].setPosition(_x, _y)
+            _eb[i].setScale(3)
+            _eb[i].setVelocity(
+                250 * Math.cos(angle0+dangle*(i-1)), 
+                250 * Math.sin(angle0+dangle*(i-1))
+            )
+        }
+        
+    }
 
 
 

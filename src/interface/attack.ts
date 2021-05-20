@@ -1,10 +1,10 @@
 import {AssetManager} from '../interface/manager/assetManager'
 
-export class AttackFunc
+export class AttackFunc extends Phaser.Physics.Arcade.Sprite
 {
     constructor(private _scene: Phaser.Scene)
     {
-
+        super(_scene)
     }
 
     singleShot(bullet: Phaser.Physics.Arcade.Sprite, gotchi: Phaser.Physics.Arcade.Sprite)
