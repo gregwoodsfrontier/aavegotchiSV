@@ -11,7 +11,7 @@ export class ScoreManager {
   glives!: Phaser.Physics.Arcade.Group;
   highScore: number = 0;
   score = 0;
-  l1texty = 15;
+  l1texty = 150;
   l1textdy = 90;
   
 
@@ -42,8 +42,8 @@ export class ScoreManager {
     };
     
     this._scene.load.addFile(new WebFontFile(this._scene.load, 'Press Start 2P'))
-    this.scoreText = this._scene.add.text(10, -SIZE_Y*0.52, `SCORE: 0`, normalTextConfig);
-    this.highscoreText = this._scene.add.text(10, -SIZE_Y*0.46, `HIGH:  0`, normalTextConfig);
+    this.scoreText = this._scene.add.text(10, SIZE_Y*0.01, `SCORE: 0`, normalTextConfig);
+    this.highscoreText = this._scene.add.text(10, SIZE_Y*0.075, `HIGH:  0`, normalTextConfig);
 
     this._setLivesText(SIZE_X, SIZE_Y, normalTextConfig);
 
@@ -67,7 +67,7 @@ export class ScoreManager {
     SIZE_Y: number,
     textConfig: { fontSize: string; fontFamily: string; color: string }
   ) {
-    this._scene.add.text(SIZE_X - 120, -SIZE_Y*0.52, `LIVES: `, textConfig).setOrigin(1,0);
+    this._scene.add.text(SIZE_X - 120, SIZE_Y*0.01, `LIVES: `, textConfig).setOrigin(1,0);
     this.glives = this._scene.physics.add.group({
       maxSize: 3,
       runChildUpdate: true,
@@ -105,31 +105,7 @@ export class ScoreManager {
   private setRestartText()
   {
     this.restartText = this.line3Text.setText('Hit D to restart')
-    // blinking text
-    this._scene.time.addEvent(
-      {
-        delay: 1000,
-        loop: true,
-        callbackScope:this,
-        callback: () => 
-        {
-            if (this.restartText.alpha === 1)
-            {
-                this._scene.time.delayedCall(500, () =>
-                {
-                    this.restartText.setAlpha(0);
-                }) 
-            }
-            else
-            {
-                this._scene.time.delayedCall(500, () =>
-                {
-                    this.restartText.setAlpha(1);
-                })
-            }
-        }
-      }
-  )
+    
   }
 
   setHighScoreTextWin()
@@ -189,7 +165,7 @@ export class ScoreManager {
     this.scoreText.setText(`SCORE: ${this.score}`);
   }
 
-  increaseScore(step = 200) {
+  increaseScore(step: number) {
     this.score += step;
     this.print();
   }

@@ -10,7 +10,7 @@ export class SushiManager {
         [1,1,1,1,1]
     ]
     animate = new AnimationFactory(this._scene)
-    sushiarmy: Phaser.Physics.Arcade.Sprite[];
+    //sushiarmy: Phaser.Physics.Arcade.Sprite[];
     lv1sushi: Phaser.Physics.Arcade.Group;
     lv2sushi: Phaser.Physics.Arcade.Group;
     lv3sushi: Phaser.Physics.Arcade.Group;
@@ -53,36 +53,32 @@ export class SushiManager {
                 runChildUpdate: true
             }
         );
-        this.sushiarmy = this.sortSushiArmy(this.wave1)
+        //this.sushiarmy = this.sortSushiArmy(this.wave1)
+        this.sortSushiArmy(this.wave1)
         this._animate()
     }
-
-    
 
     // get one single random enemy
     getRandomAliveEnemy()
     {   
-        let _sushi1 = this.lv1sushi.children.getArray() as Phaser.Physics.Arcade.Sprite[]
-        let _sushi2 = this.lv2sushi.children.getArray() as Phaser.Physics.Arcade.Sprite[]
-        let _sushi3 = this.lv3sushi.children.getArray() as Phaser.Physics.Arcade.Sprite[]
         let livingSushi = [] as Phaser.Physics.Arcade.Sprite[]
-        let _su = [_sushi1,_sushi2,_sushi3]
-
-        for (let i = 0; i < _su.length; i++)
+        let sushiSet = [this.lv1sushi.getChildren(),
+             this.lv2sushi.getChildren(),
+             this.lv3sushi.getChildren()]
+        for (let i=0; i<sushiSet.length; i++)
         {
-            for (let j = 0; j < _su[i].length; j++)
+            for (let j=0; j<sushiSet[i].length; j++)
             {
-                
-                livingSushi.push(_su[i][j])               
-                
+                livingSushi.push(sushiSet[i][j] as Phaser.Physics.Arcade.Sprite)
             }
         }
-        let random = Phaser.Math.RND.integerInRange(0, livingSushi.length-1);
-        return livingSushi[random];
+
+        let random = Phaser.Math.RND.integerInRange(0, livingSushi.length - 1);
+        return livingSushi[random]
     }
 
     reset() {
-        this.sushiarmy = this.sortSushiArmy(this.wave1)
+        this.sortSushiArmy(this.wave1)
         this._animate();
     }
 
@@ -221,7 +217,7 @@ export class SushiManager {
     {
         this.lv1sushi.clear(true, true);
         this.lv2sushi.clear(true, true);
-        this.lv3sushi.clear(true, true)
+        this.lv3sushi.clear(true, true);
     }
 
 }

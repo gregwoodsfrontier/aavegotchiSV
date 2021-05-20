@@ -25,12 +25,12 @@ export default class TitleScene extends Phaser.Scene
         this.add.image(400, 300, 'galaxy');
         this.add.image(400, 150, 'logo').setScale(0.4, 0.4);
         this.add.image(400, 300, 'sushiVader');
-        const startText = this.add.text(400, 110, 'Hit D to start', retro).setOrigin(0.5, 0);
+        const startText = this.add.text(400, 400, 'Hit D to start', retro).setOrigin(0.5, 0);
         const blinkDelay = 500;
         // blinking text
         this.time.addEvent(
             {
-                delay: 1000,
+                delay: 500,
                 loop: true,
                 callbackScope:this,
                 callback: () => {

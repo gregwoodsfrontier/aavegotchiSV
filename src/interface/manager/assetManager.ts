@@ -13,7 +13,7 @@ export class AssetManager {
         this.explosions = this._createExplosions();
     }
 
-    gameOver() {
+    clearBullets() {
         this.enemyBullets.clear(true, true)
         this.bullets.clear(true, true)
     }
