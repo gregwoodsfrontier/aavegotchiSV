@@ -332,6 +332,10 @@ export class GameScene extends Phaser.Scene {
             return;
         }
         let enemyBullet = this.assetManager.enemyBullets.get();
+        let eB = [
+            this.assetManager.enemyBullets.get(),
+            this.assetManager.enemyBullets.get()
+        ]
         let enemyBulletL = this.assetManager.enemyBullets.get();
         let enemyBulletR = this.assetManager.enemyBullets.get();
         let livingSushi = this.sushiManager.getRandomAliveEnemy()
@@ -355,14 +359,14 @@ export class GameScene extends Phaser.Scene {
             }//@ts-ignore
             else if (livingSushi.sprite === AssetType.SushiLv3)
             {
-                enemyBulletL.setPosition(livingSushi.x, livingSushi.y)
-                enemyBulletR.setPosition(livingSushi.x, livingSushi.y)
+                eB[0].setPosition(livingSushi.x, livingSushi.y)
+                eB[1].setPosition(livingSushi.x, livingSushi.y)
                 enemyBullet.setScale(3)
-                enemyBulletL.setScale(3)
-                enemyBulletR.setScale(3)
+                eB[0].setScale(3)
+                eB[1].setScale(3)
                 this.physics.moveToObject(enemyBullet, this.gotchi, 250);
-                enemyBulletL.setVelocity(250 * Math.cos(angle0-dangle), 250 * Math.sin(angle0-dangle))
-                enemyBulletR.setVelocity(250 * Math.cos(angle0+dangle), 250 * Math.sin(angle0+dangle))
+                eB[0].setVelocity(250 * Math.cos(angle0-dangle), 250 * Math.sin(angle0-dangle))
+                eB[1].setVelocity(250 * Math.cos(angle0+dangle), 250 * Math.sin(angle0+dangle))
             }
 
             this.firingTimer = this.time.now + this.fireDelay;
