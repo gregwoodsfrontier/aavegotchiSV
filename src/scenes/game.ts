@@ -125,7 +125,6 @@ export class GameScene extends Phaser.Scene {
             this.physics.pause();
             if (this.restartKey.isDown)
             {
-                console.log("Restart function")
                 //this.scene.restart()
                 this.restart()
             }
@@ -143,7 +142,6 @@ export class GameScene extends Phaser.Scene {
     // When sushi crossed a certain line, insta game over
     private sushiCross()
     {
-        //console.log('sushi cross is called')
         let yline = 450
         this.sushiManager.lv1sushi.getChildren().forEach(c => {
             const child = c as Phaser.Physics.Arcade.Sprite
