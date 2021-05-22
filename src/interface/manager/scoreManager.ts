@@ -138,7 +138,6 @@ export class ScoreManager {
   {
     if (this.score > this.highScore) {
       this.highScore = this.score;
-      console.log(this.highScore)
       this._scene.registry.set('highscore', this.highScore)
     }
 

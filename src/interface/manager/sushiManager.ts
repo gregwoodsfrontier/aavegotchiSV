@@ -7,13 +7,29 @@ export class SushiManager {
     wave1 = [
         [3,3,3,3,3],
         [2,2,2,2,2],
+        [1,1,1,1,1],
         [1,1,1,1,1]
+    ]
+    testwave1 = [
+        [2,2,2,2,2],
+        [2,2,2,2,2]
     ]
     animate = new AnimationFactory(this._scene)
     //sushiarmy: Phaser.Physics.Arcade.Sprite[];
     lv1sushi: Phaser.Physics.Arcade.Group;
     lv2sushi: Phaser.Physics.Arcade.Group;
     lv3sushi: Phaser.Physics.Arcade.Group;
+    //sushiGroup: Phaser.Physics.Arcade.Group[];
+    sushiGroupString:string[] = [
+        AssetType.SushiLv1,
+        AssetType.SushiLv2,
+        AssetType.SushiLv3
+    ]
+    sushiGroupAnime:string[] = [
+        AnimationType.Sushi1Fly,
+        AnimationType.Sushi2Fly,
+        AnimationType.Sushi3Fly
+    ]
 
     private ORIGIN_X: number = 100
     private ORIGIN_Y: number = 100
@@ -21,7 +37,9 @@ export class SushiManager {
     private dy: number = 60
 
     get noAliveSushis(): boolean {
-        let noOfSushi = this.lv1sushi.getChildren().length + this.lv2sushi.getChildren().length + this.lv3sushi.getChildren().length
+        let noOfSushi = this.lv1sushi.getChildren().length + 
+        this.lv2sushi.getChildren().length + 
+        this.lv3sushi.getChildren().length
 
         return noOfSushi > 0 ? true: false;
     }
@@ -57,6 +75,7 @@ export class SushiManager {
         this.sortSushiArmy(this.wave1)
         this._animate()
     }
+    
 
     // get one single random enemy
     getRandomAliveEnemy()
@@ -152,7 +171,6 @@ export class SushiManager {
             let posx = temp[x]
             switch (_type[x])
             {
-                
                 case 1:                 
                     pushedSushi = this.lv1sushi.create(posx, this.ORIGIN_Y, AssetType.SushiLv1)
                     _sushiarmy.push(pushedSushi)
@@ -193,7 +211,7 @@ export class SushiManager {
                 repeat: -1,
                 onYoyo: (tween, targets, undefined) => {
                     
-                    child.y += 25
+                    child.y += 27
                 }
             }
         )

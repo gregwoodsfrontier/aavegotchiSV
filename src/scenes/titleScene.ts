@@ -1,6 +1,6 @@
 import Phaser from 'phaser'
 import { SceneKeys } from '~/consts/SceneKeys';
-import WebFontFile from './webFontFile'
+//import WebFontFile from './webFontFile'
 
 const retro = {
     fontFamily: '"Press Start 2P"', 
@@ -9,23 +9,13 @@ const retro = {
 
 export default class TitleScene extends Phaser.Scene
 {
-	
-    
-	preload()
-    {
-  
-        this.load.image('galaxy', '/images/galaxyBG.png');
-        this.load.image('logo', '/images/banner.png');
-        this.load.image('sushiVader', '/images/sushi-vader-font-in.png');
-        this.load.addFile(new WebFontFile(this.load, 'Press Start 2P'))
-    }
-
     create()
     {
         this.add.image(400, 300, 'galaxy');
         this.add.image(400, 150, 'logo').setScale(0.4, 0.4);
         this.add.image(400, 300, 'sushiVader');
-        const startText = this.add.text(400, 400, 'Hit D to start', retro).setOrigin(0.5, 0);
+        this.add.text(400, 375, 'V1.2', retro).setOrigin(0.5, 0);
+        const startText = this.add.text(400, 450, 'Hit D to start', retro).setOrigin(0.5, 0);
         const blinkDelay = 500;
         // blinking text
         this.time.addEvent(
@@ -34,6 +24,7 @@ export default class TitleScene extends Phaser.Scene
                 loop: true,
                 callbackScope:this,
                 callback: () => {
+                    
                     if (startText.alpha === 1)
                     {
                         this.time.delayedCall(blinkDelay, () =>
