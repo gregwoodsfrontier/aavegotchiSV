@@ -2,7 +2,7 @@ import { Lv1Sushi, Lv2Sushi, Lv3Sushi} from "../sushi";
 import { AnimationType } from "../factory/animationFactory";
 import { AnimationFactory } from "../factory/animationFactory"
 import { AssetType } from "../assets";
-//import { Kaboom } from "../kaboom"
+
 export class SushiManager {
     wave1 = [
         [3,3,3,3,3],
@@ -35,6 +35,7 @@ export class SushiManager {
     private ORIGIN_Y: number = 100
     private dx: number = 100
     private dy: number = 60
+    descend: number = 55
 
     get noAliveSushis(): boolean {
         let noOfSushi = this.lv1sushi.getChildren().length + 
@@ -211,7 +212,7 @@ export class SushiManager {
                 repeat: -1,
                 onYoyo: (tween, targets, undefined) => {
                     
-                    child.y += 27
+                    child.y += this.descend
                 }
             }
         )

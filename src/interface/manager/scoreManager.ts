@@ -4,6 +4,7 @@ import WebFontFile from '../../scenes/webFontFile'
 export class ScoreManager {
   scoreText!: Phaser.GameObjects.Text;
   highscoreText!: Phaser.GameObjects.Text;
+  livesText!: Phaser.GameObjects.Text;
   restartText!: Phaser.GameObjects.Text;
   line1Text!: Phaser.GameObjects.Text;
   line2Text!: Phaser.GameObjects.Text;
@@ -67,7 +68,7 @@ export class ScoreManager {
     SIZE_Y: number,
     textConfig: { fontSize: string; fontFamily: string; color: string }
   ) {
-    this._scene.add.text(SIZE_X - 120, SIZE_Y*0.01, `LIVES: `, textConfig).setOrigin(1,0);
+    this.livesText = this._scene.add.text(SIZE_X - 120, SIZE_Y*0.01, `LIVES: `, textConfig).setOrigin(1,0);
     this.glives = this._scene.physics.add.group({
       maxSize: 3,
       runChildUpdate: true,
@@ -90,6 +91,7 @@ export class ScoreManager {
     }
     this.score = 0;
     this.scoreText.setText(`SCORE: 0`)
+    this.scoreText.setTint(0xffffff)
   }
 
   private _setBigText(line1: string, line2: string, line3: string) {

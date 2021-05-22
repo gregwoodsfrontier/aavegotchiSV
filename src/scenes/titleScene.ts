@@ -1,5 +1,6 @@
 import Phaser from 'phaser'
 import { SceneKeys } from '~/consts/SceneKeys';
+import blinkText from '../interface/blinkText'
 //import WebFontFile from './webFontFile'
 
 const retro = {
@@ -23,23 +24,9 @@ export default class TitleScene extends Phaser.Scene
                 delay: 500,
                 loop: true,
                 callbackScope:this,
-                callback: () => {
-                    
-                    if (startText.alpha === 1)
-                    {
-                        this.time.delayedCall(blinkDelay, () =>
-                        {
-                            startText.setAlpha(0);
-                        }) 
-                    }
-                    else
-                    {
-                        this.time.delayedCall(blinkDelay, () =>
-                        {
-                            startText.setAlpha(1);
-                        })
-                    }
-                }
+                callback: blinkText,
+                args:[this, startText, blinkDelay]
+                
             }
         )
 
@@ -50,6 +37,7 @@ export default class TitleScene extends Phaser.Scene
         this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE,
             (cam, effect) =>
             {
+                //this.scene.start(SceneKeys.GameOverScene);
                 this.scene.start(SceneKeys.GameScene);
             })
     }
