@@ -447,7 +447,6 @@ export class GameScene extends Phaser.Scene {
         this.time.addEvent(this.spawnEvent);
         this.gotchi.setAlpha(1)
         this.IsShooting = false
-        this.spawnTimer = 8000
-        this.sushiManager.descend = 30
+    
     }
 }
