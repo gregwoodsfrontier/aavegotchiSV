@@ -1,4 +1,5 @@
 import { AssetType, SoundType } from './assets'
+
 interface sushiTypeType
 {
     maxlife: number
