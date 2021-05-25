@@ -51,6 +51,6 @@ export default class Preload extends Phaser.Scene
 
     create()
     {
-        this.scene.start(SceneKeys.TestScene)
+        this.scene.start(SceneKeys.GameScene)
     }
 }
