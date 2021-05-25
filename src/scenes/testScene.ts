@@ -4,7 +4,6 @@ import { SceneKeys } from "~/consts/SceneKeys";
 import { AnimationFactory, AnimationType } from "../interface/factory/animationFactory";
 import { AssetManager } from "../interface/manager/assetManager";
 import { Bullet } from "../interface/bullet";
-import PlayerBulletPool from "~/interface/playerBulletPool";
 
 const INFO_FORMAT = 
 `Size:       %1
@@ -25,12 +24,10 @@ export default class TestScene extends Phaser.Scene
     //toggle autoshoot
     IsShooting: boolean = false
 
-    private group?: PlayerBulletPool
     private infoText?: Phaser.GameObjects.Text
 
     create()
     {
-        this.group = this.add.existing(PlayerBulletPool)
         
         this.scene.run(SceneKeys.BackGround)
         this.scene.sendToBack(SceneKeys.BackGround)
