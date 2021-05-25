@@ -101,7 +101,7 @@ export class GameScene extends Phaser.Scene {
     update() 
     {
         // call debug here
-        this.debugCall();        
+        //this.debugCall();        
 
         //when score > 10k
         this.checkToIncreaseFireRate();
@@ -368,7 +368,7 @@ export class GameScene extends Phaser.Scene {
             this.firingTimer = this.time.now + this.fireDelay;
         }
     }
-    
+
     private _fireBullet() {
         if (!this.gotchi.active) {
             return;
