@@ -18,4 +18,12 @@ export class Bullet extends Phaser.Physics.Arcade.Sprite
     {
         this.destroy();
     }
+
+    update()
+    {
+        if (this.y < -50)
+        {
+            this.destroy()
+        }
+    }
 }

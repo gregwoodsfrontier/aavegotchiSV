@@ -12,4 +12,12 @@ export class EnemyBullet extends Phaser.Physics.Arcade.Sprite
     {
         this.destroy();
     }
+
+    update()
+    {
+        if(this.y > 610)
+        {
+            this.destroy()
+        }
+    }
 }

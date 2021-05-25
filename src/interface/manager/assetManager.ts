@@ -19,13 +19,14 @@ export class AssetManager {
     }
 
     reset() {
+        this.explosions.clear(true, true)
         this._createEnemyBullets();
         this._createBullets();
     }
 
     private _createEnemyBullets(): Phaser.Physics.Arcade.Group {
         let enemyBullets = this._scene.physics.add.group({
-            max: 0,
+            maxSize: 500,
             classType: EnemyBullet,
             runChildUpdate: true,
         });
@@ -35,7 +36,7 @@ export class AssetManager {
 
     private _createBullets(): Phaser.Physics.Arcade.Group {
         let bullets = this._scene.physics.add.group({
-            max: 0,
+            maxSize: 40,
             classType: Bullet,
             runChildUpdate: true
         });
@@ -45,7 +46,7 @@ export class AssetManager {
 
     private _createExplosions(): Phaser.Physics.Arcade.Group {
         let explosions = this._scene.physics.add.group({
-            max: 40,
+            maxSize: 50,
             classType: Kaboom,
             runChildUpdate: true
         });

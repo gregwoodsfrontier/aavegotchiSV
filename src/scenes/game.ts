@@ -10,6 +10,7 @@ import { Kaboom } from "../interface/kaboom";
 import { ScoreManager } from "../interface/manager/scoreManager";
 import { GameState } from "../interface/gameState";
 import { SceneKeys } from "~/consts/SceneKeys";
+import { Lv1Sushi } from "~/interface/sushi";
 
 export class GameScene extends Phaser.Scene {
     state!: GameState;
@@ -45,6 +46,7 @@ export class GameScene extends Phaser.Scene {
 
     //debug use
     IsShown: boolean = false
+    info!: Phaser.GameObjects.Text
 
     create() {
 
@@ -59,6 +61,7 @@ export class GameScene extends Phaser.Scene {
         //this.attackFunc = new AttackFunc(this)
 
         this.gotchi = this.physics.add.sprite(400, 525, AssetType.Gotchi)
+        this.gotchi.setBodySize(43, 50)
         this.gotchi.setCollideWorldBounds(true);
         this.gotchi.setScale(1.2);
         this.gotchi.play(AnimationType.GotchiFly)
@@ -92,9 +95,13 @@ export class GameScene extends Phaser.Scene {
         )
 
         this.time.addEvent(this.spawnEvent)
+        this.info = this.add.text(0, 0, '', { color: '#00ff00' } )
     }
 
-    update() {
+    update() 
+    {
+        // call debug here
+        this.debugCall();        
 
         //when score > 10k
         this.checkToIncreaseFireRate();
@@ -124,7 +131,7 @@ export class GameScene extends Phaser.Scene {
             );
         }
         
-
+        // check if the sushi cross a certain line
         this.sushiCross();
 
         if (this.state != GameState.Playing)
@@ -137,22 +144,6 @@ export class GameScene extends Phaser.Scene {
             }
         }       
     }
-
-    /* private checkToIncreaseSpawnRate()
-    {
-        if (this.scoreManager.score >= 100)
-        {
-            this.spawnTimer = this.fastspawnTimer
-            this.sushiManager.descend = this.fastDescend
-            if(!this.IsShown)
-            {
-                console.log(this.spawnTimer)
-                console.log(this.sushiManager.descend)
-                this.IsShown = true
-            }
-            
-        }
-    } */
 
     private checkToIncreaseFireRate()
     {
@@ -167,15 +158,27 @@ export class GameScene extends Phaser.Scene {
     // debug purpose
     private debugCall()
     {
-        console.log(`lv1 sushi length: ${this.sushiManager.lv1sushi.getChildren().length}`)
-        console.log(`lv2 sushi length: ${this.sushiManager.lv2sushi.getChildren().length}`)
-        console.log(`lv3 sushi length: ${this.sushiManager.lv3sushi.getChildren().length}`)
+        this.info.setPosition(0, 410)
+        this.info.setText([
+            'player Bullet used: '+this.assetManager.bullets.getTotalUsed(),
+            'player Bullet free: '+this.assetManager.bullets.getTotalFree(),
+            'enemy  Bullet used: '+this.assetManager.enemyBullets.getTotalUsed(),
+            'enemy  Bullet free: '+this.assetManager.enemyBullets.getTotalFree(),
+            'explosion     used: '+ this.assetManager.explosions.getTotalUsed(),
+            'explosion     free: '+ this.assetManager.explosions.getTotalFree(),
+            'lv1sushi      used: '+this.sushiManager.lv1sushi.getTotalUsed(),
+            'lv1sushi      free: '+this.sushiManager.lv1sushi.getTotalFree(),
+            'lv2sushi      used: '+this.sushiManager.lv2sushi.getTotalUsed(),
+            'lv2sushi      free: '+this.sushiManager.lv2sushi.getTotalFree(),
+            'lv3sushi      used: '+this.sushiManager.lv3sushi.getTotalUsed(),
+            'lv3sushi      free: '+this.sushiManager.lv3sushi.getTotalFree(),
+        ])
     }
 
     // When sushi crossed a certain line, insta game over
     private sushiCross()
     {
-        let yline = 500
+        let yline = 450
         this.sushiManager.lv1sushi.getChildren().forEach(c => {
             const child = c as Phaser.Physics.Arcade.Sprite
             if (child.y > yline)
@@ -270,6 +273,10 @@ export class GameScene extends Phaser.Scene {
         explosion.setPosition(_x, _y)
         explosion.play(AnimationType.Kaboom)
         this.sound.play(SoundType.InvaderKilled)
+        this.time.delayedCall(2000,() => {
+            explosion.kill()
+        })
+        
     }
 
     private _bulletHitSushis(bullet, sushi)
@@ -294,13 +301,14 @@ export class GameScene extends Phaser.Scene {
         let explosion: Kaboom = this.assetManager.explosions.get();
         _enemyBullet.kill();
         let live: Phaser.GameObjects.Sprite = this.scoreManager.glives.getFirstAlive();
+
         if (live && !this.IsStar) {
             live.setActive(false).setVisible(false);
-            this.IsStar = !this.IsStar
+            this.IsStar = true
             this.gotchi.setAlpha(0.5)
             this.time.delayedCall(this.IsStarTime,() =>
                 {
-                    this.IsStar = !this.IsStar
+                    this.IsStar = false
                     this.gotchi.setAlpha(1)
                 }
             )
@@ -309,6 +317,10 @@ export class GameScene extends Phaser.Scene {
         explosion.setPosition(this.gotchi.x, this.gotchi.y);
         explosion.play(AnimationType.Kaboom);
         this.sound.play(SoundType.Kaboom)
+        this.time.delayedCall(2000,() => {
+            explosion.kill()
+        })
+        
         if (this.scoreManager.noMoreLives) {
             this.callGameOver();
         }
@@ -335,89 +347,28 @@ export class GameScene extends Phaser.Scene {
             //@ts-ignore
             if (livingSushi.sprite === AssetType.SushiLv1)
             {
-                this.singleShot(eB[0], 2.5, livingSushi.x, livingSushi.y)
+                //@ts-ignore
+                livingSushi.shoot(eB[0], this.gotchi)
+                
                 
             }//@ts-ignore
             else if (livingSushi.sprite === AssetType.SushiLv2)
             {
-                this.twinShot(eB, livingSushi, this.gotchi)
-                /* this.singleShot(eB[0], 3, livingSushi.x, livingSushi.y)
-                this.singleShot(eB[1], 3, livingSushi.x, livingSushi.y)
-                eB[1].setVelocity(250 * Math.cos(angle0-dangle), 250 * Math.sin(angle0-dangle)) */
+                //@ts-ignore
+                livingSushi.shoot(eB[0], eB[1], this.gotchi)
                                 
             }//@ts-ignore
             else if (livingSushi.sprite === AssetType.SushiLv3)
             {
-                this.radiantShot(eB, livingSushi, this.gotchi)
+                //@ts-ignore
+                livingSushi.shoot(eB[0], eB[1],  eB[2], this.gotchi)
+
             }
 
             this.firingTimer = this.time.now + this.fireDelay;
         }
-
     }
     
-    private singleShot(bullet: Phaser.Physics.Arcade.Sprite, _scale:number, _x:number, _y:number)
-    {
-        bullet.setPosition(_x, _y)
-        bullet.setScale(_scale)
-        this.physics.moveToObject(bullet, this.gotchi, 250);
-    }
-
-    private twinShot(_eb: Phaser.Physics.Arcade.Sprite[],  _sushi: Phaser.Physics.Arcade.Sprite,
-        _gotchi: Phaser.Physics.Arcade.Sprite)
-    {
-        let shootVArray = [] as Phaser.Math.Vector2[]
-        for (let a=0;a<3;a++)
-        {
-            let b = new Phaser.Math.Vector2(_gotchi.x-_sushi.x, _gotchi.y-_sushi.y).setLength(250)
-            shootVArray.push(b)
-        }
-        const dangle = 0.18
-        let c = shootVArray[1].angle()
-        for (let a=0;a<3;a++)
-        {
-            shootVArray[a].setAngle(c+(a-1)*dangle)
-        }
-        
-        for (let i=0; i<3; i++)
-        {
-            if (i === 1)
-            {
-                continue
-            }
-            _eb[i].setPosition(_sushi.x, _sushi.y)
-            _eb[i].setScale(3)
-            _eb[i].setVelocity(shootVArray[i].x, shootVArray[i].y)
-        }
-    }
-
-    private radiantShot(_eb: Phaser.Physics.Arcade.Sprite[],  _sushi: Phaser.Physics.Arcade.Sprite,
-        _gotchi: Phaser.Physics.Arcade.Sprite)
-    {
-        let shootVArray = [] as Phaser.Math.Vector2[]
-        for (let a=0;a<3;a++)
-        {
-            let b = new Phaser.Math.Vector2(_gotchi.x-_sushi.x, _gotchi.y-_sushi.y).setLength(250)
-            shootVArray.push(b)
-        }
-        const dangle = 0.375
-        let c = shootVArray[1].angle()
-        for (let a=0;a<3;a++)
-        {
-            shootVArray[a].setAngle(c+(a-1)*dangle)
-        }
-        
-        for (let i=0; i<3; i++)
-        {
-            _eb[i].setPosition(_sushi.x, _sushi.y)
-            _eb[i].setScale(3)
-            _eb[i].setVelocity(shootVArray[i].x, shootVArray[i].y)
-        }
-        
-    }
-
-
-
     private _fireBullet() {
         if (!this.gotchi.active) {
             return;
