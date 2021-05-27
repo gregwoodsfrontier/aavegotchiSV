@@ -16,5 +16,6 @@ export enum SoundType
 {
     Kaboom = "kaboom",
     Shoot = "shoot",
-    InvaderKilled = "invaderkilled"
+    InvaderKilled = "invaderkilled",
+    EscapeTheFud = "escapethefud"
 }

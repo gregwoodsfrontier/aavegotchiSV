@@ -10,11 +10,12 @@ import { Kaboom } from "../interface/kaboom";
 import { ScoreManager } from "../interface/manager/scoreManager";
 import { GameState } from "../interface/gameState";
 import { SceneKeys } from "~/consts/SceneKeys";
-import { Lv1Sushi } from "~/interface/sushi";
+import Gotchi from "../interface/gotchi";
 
 export class GameScene extends Phaser.Scene {
+    escapeTheFud!: Phaser.Sound.BaseSound
     state!: GameState;
-    gotchi!: Phaser.Physics.Arcade.Sprite
+    gotchi!: Phaser.GameObjects.Sprite
     animationFactory!: AnimationFactory
     scoreManager!: ScoreManager
     sushiManager!: SushiManager
@@ -58,11 +59,20 @@ export class GameScene extends Phaser.Scene {
         this.scoreManager = new ScoreManager(this)
         this.sushiManager = new SushiManager(this)
         this.assetManager = new AssetManager(this)
-        //this.attackFunc = new AttackFunc(this)
+        this.escapeTheFud = this.sound.add(SoundType.EscapeTheFud, {
+            loop: true,
+            seek: 118
+        })
+        this.escapeTheFud.play()
 
-        this.gotchi = this.physics.add.sprite(400, 525, AssetType.Gotchi)
-        this.gotchi.setBodySize(43, 50)
-        this.gotchi.setCollideWorldBounds(true);
+        this.gotchi = new Gotchi(this, 400, 525)
+        this.add.existing(this.gotchi)
+
+        console.log(this.gotchi)
+        //this.gotchi = this.physics.add.sprite(400, 525, AssetType.Gotchi)
+        this.gotchi.setSize(43, 50)
+        //this.gotchi.body.setSize(43, 50, true)
+        //this.gotchi.setCollideWorldBounds(true);
         this.gotchi.setScale(1.2);
         this.gotchi.play(AnimationType.GotchiFly)
 
@@ -96,10 +106,21 @@ export class GameScene extends Phaser.Scene {
 
         this.time.addEvent(this.spawnEvent)
         this.info = this.add.text(0, 0, '', { color: '#00ff00' } )
+        
     }
 
     update() 
     {
+
+        
+        if (this.state !== GameState.Playing)
+        {
+            this.escapeTheFud.pause()
+        }
+        else
+        {
+            this.escapeTheFud.resume()
+        }
         // call debug here
         //this.debugCall();        
 
@@ -241,12 +262,12 @@ export class GameScene extends Phaser.Scene {
         return _c
     }
 
-    private _shipKeyboardHandler(_gotchi: Phaser.Physics.Arcade.Sprite) {
-        _gotchi.setVelocity(0, 0)
+    private _shipKeyboardHandler(_gotchi) {
+        _gotchi.body.setVelocity(0, 0)
         if (this.cursors.left.isDown) {
-            _gotchi.setVelocityX(-250);
+            _gotchi.body.setVelocityX(-250);
         } else if (this.cursors.right.isDown) {
-            _gotchi.setVelocityX(250);
+            _gotchi.body.setVelocityX(250);
         }
 
         if (Phaser.Input.Keyboard.JustDown(this.fireKey)) {
@@ -257,10 +278,15 @@ export class GameScene extends Phaser.Scene {
     private callGameOver()
     {
         this.state = GameState.GameOver;
+        this.IsShooting = false;
+        this.IsStar = false;
         this.scoreManager.setHighScoreTextLose();
         // this func clear the bullets
         this.assetManager.clearBullets();
-        this.gotchi.disableBody(true, true);
+        this.gotchi.setActive(false)
+        //this.gotchi.body.enable = false;
+        this.gotchi.visible = false;
+        //this.gotchi.disableBody(true, true);
         this.tweens.pauseAll();
         this.physics.pause();
         this.sushiManager.disableAllSushis();
@@ -386,7 +412,10 @@ export class GameScene extends Phaser.Scene {
 
     restart() {
         this.state = GameState.Playing;
-        this.gotchi.enableBody(true, this.gotchi.x, this.gotchi.y, true, true);
+        this.gotchi.setActive(true);
+        //this.gotchi.body.enable = true;
+        this.gotchi.visible = true;
+        //this.gotchi.enableBody(true, this.gotchi.x, this.gotchi.y, true, true);
         this.scoreManager.resetData();
         this.scoreManager.hideText();
         this.sushiManager.reset();

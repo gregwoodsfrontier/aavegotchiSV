@@ -9,6 +9,7 @@ export class ScoreManager {
   line1Text!: Phaser.GameObjects.Text;
   line2Text!: Phaser.GameObjects.Text;
   line3Text!: Phaser.GameObjects.Text;
+  line4Text!: Phaser.GameObjects.Text;
   glives!: Phaser.Physics.Arcade.Group;
   highScore: number = 0;
   score = 0;
@@ -59,6 +60,10 @@ export class ScoreManager {
     this.line3Text = this._scene.add
       .text(SIZE_X / 2, this.l1texty+this.l1textdy*2, "", bigTextConfig)
       .setOrigin(0.5);
+    
+    this.line4Text = this._scene.add
+      .text(SIZE_X / 2, this.l1texty+this.l1textdy*3, "", bigTextConfig)
+      .setOrigin(0.5);
 
   
   }
@@ -94,20 +99,21 @@ export class ScoreManager {
     this.scoreText.setTint(0xffffff)
   }
 
-  private _setBigText(line1: string, line2: string, line3: string) {
+  private _setBigText(line1: string, line2: string, line3: string, line4: string) {
     this.line1Text.setText(line1);
     this.line2Text.setText(line2);
     this.line3Text.setText(line3);
+    this.line4Text.setText(line4);
   }
 
   hideText() {
-    this._setBigText("", "", "")
+    this._setBigText("", "", "","")
   }
 
   private setRestartText()
   {
     this.restartText = this.line3Text.setText('Hit D to restart')
-    
+    this.line4Text.setText('Credit to @jo0wz\n  for FUD music')
   }
 
   setHighScoreTextWin()
@@ -122,7 +128,7 @@ export class ScoreManager {
       this.highscoreText.setText(`HIGH:  ${this._scene.registry.get('highscore')}`)
       this._setBigText("GAME OVER", 
       `HIGH SCORE: ${this._scene.registry.get('highscore')}`,
-      "")
+      "","")
       this.setRestartText();
       
     }
@@ -131,7 +137,7 @@ export class ScoreManager {
       this.highscoreText.setText(`HIGH:  0`)
       this._setBigText("GAME OVER", 
       `HIGH SCORE: 0`,
-      "")
+      "","")
       this.setRestartText();
     }
   }
@@ -148,7 +154,7 @@ export class ScoreManager {
       this.highscoreText.setText(`HIGH:  ${this._scene.registry.get('highscore')}`)
       this._setBigText("GAME OVER", 
       `HIGH SCORE: ${this._scene.registry.get('highscore')}`,
-      "")
+      "","")
       this.setRestartText();
     }
     else
@@ -156,7 +162,7 @@ export class ScoreManager {
       this.highscoreText.setText(`HIGH:  0`)
       this._setBigText("GAME OVER", 
       `HIGH SCORE: 0`,
-      "")
+      "","")
       this.setRestartText();
     }
     

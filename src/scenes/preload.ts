@@ -47,6 +47,7 @@ export default class Preload extends Phaser.Scene
         this.load.audio(SoundType.Shoot, "/audio/shoot.wav");
         this.load.audio(SoundType.Kaboom, "/audio/explosion.wav");
         this.load.audio(SoundType.InvaderKilled, "/audio/invaderkilled.wav");
+        this.load.audio(SoundType.EscapeTheFud, "/audio/escapethefud.wav")
     }
 
     create()
