@@ -23,12 +23,14 @@ export class Lv1Sushi extends Phaser.Physics.Arcade.Sprite implements sushiTypeT
         super(scene, x, y, AssetType.SushiLv1);
     }
 
-    shoot(ebullet: EnemyBullet, target: Phaser.Physics.Arcade.Sprite)
+    shoot(ebullet: EnemyBullet,
+        target: Phaser.Physics.Arcade.Sprite,
+        speed = 250)
     {
         ebullet.setPosition(this.x, this.y)
         ebullet.setScale(2)
         ebullet.setCircle(4, 0, 0)
-        this.scene.physics.moveToObject(ebullet, target, 250)
+        this.scene.physics.moveToObject(ebullet, target, speed)
     }
 
 }
@@ -47,12 +49,14 @@ export class Lv2Sushi extends Phaser.Physics.Arcade.Sprite implements sushiTypeT
 
     shoot(eb0: EnemyBullet,
         eb1: EnemyBullet,
-        target: Phaser.Physics.Arcade.Sprite)
+        target: Phaser.Physics.Arcade.Sprite,
+        delta = 0.2,
+        speed = 250)
     {
-        let b0 = new Phaser.Math.Vector2(target.x - this.x, target.y - this.y).setLength(250)
-        let b1 = new Phaser.Math.Vector2(target.x - this.x, target.y - this.y).setLength(250)
-        b0.setAngle(b0.angle() + 0.2)
-        b1.setAngle(b1.angle() - 0.2)
+        let b0 = new Phaser.Math.Vector2(target.x - this.x, target.y - this.y).setLength(speed)
+        let b1 = new Phaser.Math.Vector2(target.x - this.x, target.y - this.y).setLength(speed)
+        b0.setAngle(b0.angle() + delta)
+        b1.setAngle(b1.angle() - delta)
 
         eb0.setPosition(this.x, this.y);
         eb1.setPosition(this.x, this.y);
@@ -81,13 +85,15 @@ export class Lv3Sushi extends Phaser.Physics.Arcade.Sprite implements sushiTypeT
     shoot(eb0: EnemyBullet,
         eb1: EnemyBullet,
         eb2: EnemyBullet,
-        target: Phaser.Physics.Arcade.Sprite)
+        target: Phaser.Physics.Arcade.Sprite,
+        delta = 0.4,
+        speed = 250)
     {
-        let b0 = new Phaser.Math.Vector2(target.x - this.x, target.y - this.y).setLength(250)
-        let b1 = new Phaser.Math.Vector2(target.x - this.x, target.y - this.y).setLength(250)
-        let b2 = new Phaser.Math.Vector2(target.x - this.x, target.y - this.y).setLength(250)
-        b0.setAngle(b0.angle() + 0.4)
-        b1.setAngle(b1.angle() - 0.4)
+        let b0 = new Phaser.Math.Vector2(target.x - this.x, target.y - this.y).setLength(speed)
+        let b1 = new Phaser.Math.Vector2(target.x - this.x, target.y - this.y).setLength(speed)
+        let b2 = new Phaser.Math.Vector2(target.x - this.x, target.y - this.y).setLength(speed)
+        b0.setAngle(b0.angle() + delta)
+        b1.setAngle(b1.angle() - delta)
 
         eb0.setPosition(this.x, this.y);
         eb1.setPosition(this.x, this.y);
